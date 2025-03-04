@@ -60,7 +60,7 @@ func addTodo(context *gin.Context) {
 	context.IndentedJSON(http.StatusCreated, newTodo)
 }
 
-// MARK: - Handle PUT
+// MARK: - Handle PATCH
 func toogleTodoStatus(context *gin.Context) {
 	id := context.Param("id")
 
