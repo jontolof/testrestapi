@@ -8,10 +8,10 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine) {
-	// Initiera vår service
+	// Initiate our service
 	todoService := services.NewTodoService()
 
-	// Initiera controllern med servicen
+	// Initiate the controller with the service
 	todoController := controllers.NewTodoController(todoService)
 
 	todos := router.Group("/todos")

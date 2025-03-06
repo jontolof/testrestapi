@@ -12,7 +12,7 @@ type TodoController struct {
 	Service *services.TodoService
 }
 
-// Skapa en ny instans av TodoController
+// Create an instance of TodoController
 func NewTodoController(service *services.TodoService) *TodoController {
 	return &TodoController{
 		Service: service,
@@ -20,7 +20,6 @@ func NewTodoController(service *services.TodoService) *TodoController {
 }
 
 // MARK: - Handle GET
-// GetTodos hanterar GET /todos
 func (controller *TodoController) GetTodos(context *gin.Context) {
 	todos, err := controller.Service.GetTodos()
 	if err != nil {

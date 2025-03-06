@@ -21,6 +21,7 @@ func NewTodoService() *TodoService {
 	}
 }
 
+// MARK: - Handle GET
 func (service *TodoService) GetTodos() ([]models.Todo, error) {
 	return service.todos, nil
 }
@@ -34,6 +35,7 @@ func (service *TodoService) GetTodoById(id string) (*models.Todo, error) {
 	return nil, errors.New("Todo not found")
 }
 
+// MARK: - Handle POST
 func (service *TodoService) AddTodo(todo *models.Todo) (*models.Todo, error) {
 	service.todos = append(service.todos, *todo)
 	return todo, nil
