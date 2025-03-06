@@ -42,7 +42,6 @@ func (service *TodoService) AddTodo(todo *models.Todo) (*models.Todo, error) {
 }
 
 // MARK: - Handle PATCH
-
 func (service *TodoService) ToggleTodoStatus(id string) (*models.Todo, error) {
 	todo, err := service.GetTodoById(id)
 
