@@ -42,27 +42,6 @@ func (controller *TodoController) GetTodo(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, todo)
 }
 
-// func getTodo(context *gin.Context) {
-// 	id := context.Param("id")
-
-// 	todo, err := getTodoById(id)
-
-// 	if err != nil {
-// 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Todo not found"})
-// 		return
-// 	}
-// 	context.IndentedJSON(http.StatusOK, todo)
-// }
-
-// func getTodoById(id string) (*todo, error) {
-// 	for i, t := range todos {
-// 		if t.ID == id {
-// 			return &todos[i], nil
-// 		}
-// 	}
-// 	return nil, errors.New("Todo not found")
-// }
-
 // MARK: - Handle POST
 func (controller *TodoController) AddTodo(context *gin.Context) {
 	var newTodo models.Todo
@@ -82,6 +61,7 @@ func (controller *TodoController) AddTodo(context *gin.Context) {
 	context.IndentedJSON(http.StatusCreated, todo)
 }
 
+// MARK: - Handle PATCH
 func (controller *TodoController) ToggleTodoStatus(context *gin.Context) {
 	id := context.Param("id")
 
