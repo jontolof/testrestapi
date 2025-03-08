@@ -1,14 +1,11 @@
 # Dockerfile
-FROM golang:alpine
+# FROM iron/go
+FROM scratch
 
-WORKDIR "/testrestapi"
+WORKDIR /testrestapi
 
-COPY . .
-
-RUN go build -o ./main ./cmd/testrestapi/main.go
-
-CMD ["./main"]
+COPY main ./
 
 EXPOSE 8080
 
-
+ENTRYPOINT ["./main"]
