@@ -14,5 +14,5 @@ func main() {
 	routes.SetupRoutes(router)
 
 	// Start servern on port 8080
-	router.Run("0.0.0.0:9090")
+	router.Run("0.0.0.0:8080")
 }
