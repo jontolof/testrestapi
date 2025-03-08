@@ -2,17 +2,21 @@ package main
 
 // MARK: - Imports
 import (
+	"log"
+	"net/http"
 	"testrestapi/internal/routes"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+	mux := http.NewServeMux()
 
 	// Setup Routes
-	routes.SetupRoutes(router)
+	routes.SetupRoutes(mux)
 
 	// Start servern on port 8080
-	router.Run("0.0.0.0:8080")
+	log.Println("Server starting on :8080")
+	err := http.ListenAndServe("0.0.0.0:8080", mux)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }

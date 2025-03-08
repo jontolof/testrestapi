@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
+	"strings"
 	"testrestapi/internal/models"
 	"testrestapi/internal/services"
-
-	"github.com/gin-gonic/gin"
 )
 
 type TodoController struct {
@@ -20,55 +20,73 @@ func NewTodoController(service *services.TodoService) *TodoController {
 }
 
 // MARK: - Handle GET
-func (controller *TodoController) GetTodos(context *gin.Context) {
+func (controller *TodoController) GetTodos(responseWriter http.ResponseWriter, request *http.Request) {
 	todos, err := controller.Service.GetTodos()
 	if err != nil {
-		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
 	}
-	context.IndentedJSON(http.StatusOK, todos)
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.WriteHeader(http.StatusOK)
+	json.NewEncoder(responseWriter).Encode(todos)
 }
 
-func (controller *TodoController) GetTodo(context *gin.Context) {
-	id := context.Param("id")
+func (controller *TodoController) GetTodo(responseWriter http.ResponseWriter, request *http.Request) {
+	parts := strings.Split(request.URL.Path, "/")
 
+	if len(parts) < 3 || parts[2] == "" {
+		http.Error(responseWriter, "Invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	id := parts[2]
 	todo, err := controller.Service.GetTodoById(id)
 
 	if err != nil {
-		context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Todo not found"})
+		http.Error(responseWriter, "Todo not found", http.StatusNotFound)
 		return
 	}
-	context.IndentedJSON(http.StatusOK, todo)
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.WriteHeader(http.StatusOK)
+	json.NewEncoder(responseWriter).Encode(todo)
 }
 
 // MARK: - Handle POST
-func (controller *TodoController) AddTodo(context *gin.Context) {
+func (controller *TodoController) AddTodo(responseWriter http.ResponseWriter, request *http.Request) {
 	var newTodo models.Todo
 
-	if err := context.BindJSON(&newTodo); err != nil {
-		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+	if err := json.NewDecoder(request.Body).Decode(&newTodo); err != nil {
+		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
 	}
 
 	todo, err := controller.Service.AddTodo(&newTodo)
 
 	if err != nil {
-		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
 	}
-
-	context.IndentedJSON(http.StatusCreated, todo)
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.WriteHeader(http.StatusCreated)
+	json.NewEncoder(responseWriter).Encode(todo)
 }
 
 // MARK: - Handle PATCH
-func (controller *TodoController) ToggleTodoStatus(context *gin.Context) {
-	id := context.Param("id")
+func (controller *TodoController) ToggleTodoStatus(responseWriter http.ResponseWriter, request *http.Request) {
+	parts := strings.Split(request.URL.Path, "/")
+	if len(parts) < 3 || parts[2] == "" {
+		http.Error(responseWriter, "Invalid URL", http.StatusBadRequest)
+		return
+	}
+	id := parts[2]
 
 	todo, err := controller.Service.ToggleTodoStatus(id)
 
 	if err != nil {
-		context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Todo not found"})
+		http.Error(responseWriter, "Todo not found", http.StatusNotFound)
 		return
 	}
-	context.IndentedJSON(http.StatusOK, todo)
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.WriteHeader(http.StatusOK)
+	json.NewEncoder(responseWriter).Encode(todo)
 }
