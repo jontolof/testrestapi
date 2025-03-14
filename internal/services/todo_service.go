@@ -32,11 +32,13 @@ func (service *TodoService) GetTodoById(id string) (*models.Todo, error) {
 			return &service.todos[i], nil
 		}
 	}
-	return nil, errors.New("Todo not found")
+	return nil, errors.New("todo not found")
 }
 
 // MARK: - Handle POST
 func (service *TodoService) AddTodo(todo *models.Todo) (*models.Todo, error) {
+	service.mu.Lock()
+	defer service.mu.Unlock()
 	service.todos = append(service.todos, *todo)
 	return todo, nil
 }
