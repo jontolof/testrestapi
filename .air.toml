@@ -1,0 +1,13 @@
+[build]
+    cmd = "go build -o ./tmp/main ./cmd/testrestapi"
+    bin = "tmp/main"
+    dir = "/app"
+    include_ext = ["go", "tpl", "tmpl", "html"]
+    exclude_dir = ["assets", "tmp", "vendor"]
+    run_after_build = "chmod +x main"
+
+[color]
+    main = "yellow"
+    watcher = "cyan"
+    build = "green"
+    runner = "magenta"
