@@ -4,10 +4,15 @@ package main
 import (
 	"log"
 	"net/http"
+	"testrestapi/internal/db"
 	"testrestapi/internal/routes"
 )
 
 func main() {
+	// Initiate database connection (and potential migration)
+	db.Init()
+
+	// Create Mux
 	mux := http.NewServeMux()
 
 	// Setup Routes

@@ -3,90 +3,95 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"testrestapi/internal/models"
 	"testrestapi/internal/services"
 )
 
 type TodoController struct {
-	Service *services.TodoService
+	Service services.TodoService
 }
 
 // Create an instance of TodoController
-func NewTodoController(service *services.TodoService) *TodoController {
-	return &TodoController{
-		Service: service,
-	}
+func NewTodoController(service services.TodoService) *TodoController {
+	return &TodoController{Service: service}
 }
 
 // MARK: - Handle GET
-func (controller *TodoController) GetTodos(responseWriter http.ResponseWriter, request *http.Request) {
+func (controller *TodoController) GetTodos(writer http.ResponseWriter, request *http.Request) {
 	todos, err := controller.Service.GetTodos()
 	if err != nil {
-		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+		http.Error(writer, "Bad request", http.StatusBadRequest)
 		return
 	}
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.WriteHeader(http.StatusOK)
-	json.NewEncoder(responseWriter).Encode(todos)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(todos)
 }
 
-func (controller *TodoController) GetTodo(responseWriter http.ResponseWriter, request *http.Request) {
+func (controller *TodoController) GetTodo(writer http.ResponseWriter, request *http.Request) {
 	parts := strings.Split(request.URL.Path, "/")
 
 	if len(parts) < 3 || parts[2] == "" {
-		http.Error(responseWriter, "Invalid URL", http.StatusBadRequest)
+		http.Error(writer, "Missing ID", http.StatusBadRequest)
 		return
 	}
 
-	id := parts[2]
-	todo, err := controller.Service.GetTodoById(id)
+	id, err := strconv.Atoi(parts[len(parts)-1])
+	if err != nil {
+		http.Error(writer, "Unvalid ID", http.StatusBadRequest)
+		return
+	}
+	todo, err := controller.Service.GetTodoByID(id)
 
 	if err != nil {
-		http.Error(responseWriter, "Todo not found", http.StatusNotFound)
+		http.Error(writer, "Todo not found", http.StatusNotFound)
 		return
 	}
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.WriteHeader(http.StatusOK)
-	json.NewEncoder(responseWriter).Encode(todo)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(todo)
 }
 
 // MARK: - Handle POST
-func (controller *TodoController) AddTodo(responseWriter http.ResponseWriter, request *http.Request) {
+func (controller *TodoController) AddTodo(writer http.ResponseWriter, request *http.Request) {
 	var newTodo models.Todo
 
 	if err := json.NewDecoder(request.Body).Decode(&newTodo); err != nil {
-		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+		http.Error(writer, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	todo, err := controller.Service.AddTodo(&newTodo)
-
+	createdTodo, err := controller.Service.AddTodo(newTodo)
 	if err != nil {
-		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+		http.Error(writer, "Bad request", http.StatusInternalServerError)
 		return
 	}
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.WriteHeader(http.StatusCreated)
-	json.NewEncoder(responseWriter).Encode(todo)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(writer).Encode(createdTodo)
 }
 
 // MARK: - Handle PATCH
-func (controller *TodoController) ToggleTodoStatus(responseWriter http.ResponseWriter, request *http.Request) {
+func (controller *TodoController) ToggleTodoStatus(writer http.ResponseWriter, request *http.Request) {
 	parts := strings.Split(request.URL.Path, "/")
 	if len(parts) < 3 || parts[2] == "" {
-		http.Error(responseWriter, "Invalid URL", http.StatusBadRequest)
+		http.Error(writer, "Missing ID", http.StatusBadRequest)
 		return
 	}
-	id := parts[2]
+	id, err := strconv.Atoi(parts[len(parts)-1])
+	if err != nil {
+		http.Error(writer, "Ogilitigt ID", http.StatusBadRequest)
+	}
 
-	todo, err := controller.Service.ToggleTodoStatus(id)
+	updatedTodo, err := controller.Service.ToggleTodoStatus(id)
 
 	if err != nil {
-		http.Error(responseWriter, "Todo not found", http.StatusNotFound)
+		http.Error(writer, "Todo not found", http.StatusNotFound)
 		return
 	}
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.WriteHeader(http.StatusOK)
-	json.NewEncoder(responseWriter).Encode(todo)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(updatedTodo)
 }

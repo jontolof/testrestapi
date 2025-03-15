@@ -32,7 +32,7 @@ func (repository *todoRepository) GetAll() ([]models.Todo, error) {
 	return todos, nil
 }
 
-func (repository *todoRepository) GetById(id int) (models.Todo, error) {
+func (repository *todoRepository) GetByID(id int) (models.Todo, error) {
 	var todo models.Todo
 	err := repository.DB.QueryRow("SELECT id, item, completed FROM todos WHERE id = $1", id).Scan(&todo.ID, &todo.Item, &todo.Completed)
 	return todo, err
@@ -40,7 +40,7 @@ func (repository *todoRepository) GetById(id int) (models.Todo, error) {
 
 func (repository *todoRepository) Create(todo models.Todo) (models.Todo, error) {
 	err := repository.DB.QueryRow(
-		"INSERT INTO todos (item, completed) VALUES {$1, $2} RETURNING id",
+		"INSERT INTO todos (item, completed) VALUES ($1, $2) RETURNING id",
 		todo.Item, todo.Completed,
 	).Scan(&todo.ID)
 	return todo, err

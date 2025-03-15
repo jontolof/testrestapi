@@ -6,7 +6,7 @@ import (
 
 type TodoRepository interface {
 	GetAll() ([]models.Todo, error)
-	GetById(id int) (models.Todo, error)
+	GetByID(id int) (models.Todo, error)
 	Create(todo models.Todo) (models.Todo, error)
 	Update(todo models.Todo) (models.Todo, error)
 }

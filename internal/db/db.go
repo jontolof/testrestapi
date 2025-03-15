@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/lib/pg"
+	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB

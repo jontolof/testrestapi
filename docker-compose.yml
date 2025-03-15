@@ -9,6 +9,8 @@ services:
       - .env
     ports:
       - 8080:8080
+    depends_on:
+      - db
 
     # This command replicates the mapping of volumes in the command
     # >> docker run -p 8080:8080 --rm -v $(pwd):/app -v /app/tmp --name testrestapi_container testrestapi
